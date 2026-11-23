@@ -1,0 +1,343 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://preview.hcodx.io/?entry=index.html&_h=1795012216890&_tok=tok-sxn95tzh1g2loamgoeabx
+Subject: HCODX Preview
+Date: Thu, 19 Nov 2026 02:06:05 GMT
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----"
+
+
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----
+Content-Type: text/html
+Content-ID: <frame-DBBD4D73DE73F1FA64D0CF2FAEC45A85@mhtml.blink>
+Content-Transfer-Encoding: binary
+Content-Location: https://preview.hcodx.io/?entry=index.html&_h=1795012216890&_tok=tok-sxn95tzh1g2loamgoeabx
+
+<!DOCTYPE html><!--
+  ══════════════════════════════════════════════════════════════════
+  HCODX PREVIEW CONTROLLER / BROKER — preview.hcodx.io/index.html
+  VERSION: 5.0.0
+  ══════════════════════════════════════════════════════════════════
+
+  WHY THIS FILE EXISTS (editor audit isolation fix):
+    The previous preview shell ran the privileged controller AND the
+    untrusted previewed project on the SAME origin (preview.hcodx.io) with
+    `allow-same-origin`, so project code could seize the shell's realm, rewrite
+    its DOM, wipe the shared cache, and forge messages that looked like they
+    came from the trusted shell to the editor. See HCODX/EDITOR-PRODUCTION-AUDIT.md.
+
+  WHAT THIS FILE IS NOW:
+    A thin, origin-gated BROKER. It holds no service worker, no cache, and no
+    project code. It embeds the render engine CROSS-ORIGIN
+    (https://sbx.hcodx.io/render.html) and relays postMessages between:
+      • the editor (https://hcodx.io)  — the parent/opener that controls it, and
+      • the render engine (https://sbx.hcodx.io) — its one child iframe.
+    It forwards messages verbatim; all protocol logic lives in the editor
+    connector and in render.html. Because previewed project code now lives on
+    sbx.hcodx.io, it is cross-origin to this broker and to the editor, so its
+    forged messages carry the wrong origin and are rejected at every hop.
+
+  TRUST GATES (both directions, origin AND source checked):
+    editor → broker : e.origin === EDITOR_ORIGIN && isTrustedController(e.source)
+                      → forwarded DOWN to the render frame.
+    render → broker : e.origin === RENDER_ORIGIN && e.source === renderFrame.contentWindow
+                      → forwarded UP to the editor (parent + opener).
+    A message from the previewed project (origin sbx.hcodx.io, but
+    e.source is the project window, not renderFrame.contentWindow) fails the
+    source check here, and additionally fails the editor connector's own
+    `e.origin === preview.hcodx.io` check. No Cloudflare Worker is involved.
+  ══════════════════════════════════════════════════════════════════
+--><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-defda1db-43af-4506-9a9f-ae6750afcbba@mhtml.blink" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HCODX Preview</title>
+  
+</head>
+<body>
+
+<iframe id="render-frame" title="Preview" allow="accelerometer; camera; encrypted-media; geolocation; gyroscope;
+         microphone; midi; clipboard-read; clipboard-write; fullscreen;
+         autoplay; payment; usb; xr-spatial-tracking; web-share;
+         storage-access" src="cid:frame-417612DE1FBA483E755D2EEA46632F21@mhtml.blink"></iframe>
+
+
+
+
+</body></html>
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----
+Content-Type: text/css
+Content-Transfer-Encoding: binary
+Content-Location: cid:css-defda1db-43af-4506-9a9f-ae6750afcbba@mhtml.blink
+
+@charset "utf-8";
+
+*, ::before, ::after { box-sizing: border-box; margin: 0px; padding: 0px; }
+
+html, body { width: 100%; height: 100%; overflow: hidden; background: rgb(30, 30, 46); }
+
+#render-frame { width: 100%; height: 100%; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; display: block; background: rgb(255, 255, 255); }
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----
+Content-Type: text/html
+Content-ID: <frame-417612DE1FBA483E755D2EEA46632F21@mhtml.blink>
+Content-Transfer-Encoding: binary
+Content-Location: https://sbx.hcodx.io/render?entry=index.html&_h=1795012216890&_tok=tok-sxn95tzh1g2loamgoeabx
+
+<!DOCTYPE html><!--
+  ══════════════════════════════════════════════════════════════════
+  HCODX PREVIEW RENDER ENGINE — sbx.hcodx.io/render.html
+  VERSION: 5.0.0-render  (was preview.hcodx.io/index.html v4.7.2)
+  ══════════════════════════════════════════════════════════════════
+
+  CROSS-ORIGIN ISOLATION (v5.0.0):
+    This file is the preview RENDER ENGINE. It is served from the dedicated
+    render origin (sbx.hcodx.io) and is the ONLY place previewed project code
+    executes. Its single trusted controller is the broker shell on
+    preview.hcodx.io (PARENT_ORIGIN below). Because project code is now
+    cross-origin to both the controller and the editor (hcodx.io), it can no
+    longer reach their realms, mutate their DOM, or forge their-origin
+    messages — closing the preview-isolation blocker from the editor audit.
+    The pipeline below is unchanged from the previous shell; only the trusted
+    origins moved. See controller/index.html for the broker and README.md.
+  ══════════════════════════════════════════════════════════════════
+
+  NEW in v4.7.2:
+  ✅ PRO-BRIDGE     Relay the emulator's "pro" bridge messages through the
+                    shell in BOTH directions: { source:'hcodx-pro-cmd' } from
+                    the emulator is forwarded DOWN to the inner user page, and
+                    { source:'hcodx-pro' } from the inner page's capture bridge
+                    (e.g. inspect-pick) is forwarded UP to the emulator. The
+                    shell previously only switched on HCODX_* message TYPES, so
+                    inspect / touch-sim / UA-spoof commands never reached the
+                    bridge — the "Inspect button does nothing" bug.
+
+  NEW in v4.7.1:  (CRITICAL — follow-up to 4.7.0)
+  ✅ FIX-STALEREV   HTML files are no longer dedup-copied across revisions.
+                    rewriteAssetPaths() bakes the current rev into every
+                    asset URL at write time; the fileHashMap dedup layer then
+                    copied an unchanged HTML file's body verbatim into each
+                    new revision — carrying the OLD baked rev in its asset
+                    URLs. Once that rev aged out of REV_KEEP, navigating to
+                    any page whose HTML was frozen (i.e. any page other than
+                    the one currently being edited) 404'd ALL of its assets
+                    while the HTML itself still served fine. HTML now always
+                    re-encodes (re-rewrites against the current rev). Binary /
+                    CSS / JS still dedup — they carry no baked rev. This was
+                    latent before 4.7.0 but masked by the old cross-session
+                    wipe constantly resetting sessions before revisions could
+                    accumulate past 3; removing that wipe surfaced it.
+
+  NEW in v4.7.0:  (CRITICAL — multi-surface cache corruption fix)
+  ✅ FIX-XSESSION   Removed the destructive cross-session cache wipe.
+                    Every preview surface (split pane, new tab, emulator,
+                    lighthouse) shares ONE Service Worker + ONE Cache on
+                    preview.hcodx.io, but each shell load minted its own
+                    SESSION_ID and, on SW-ready, fired
+                    HCODX_SW_PRUNE_OLD_SESSIONS { keepSessionId: <self> }.
+                    The SW then deleted EVERY other session's files — so
+                    opening a new tab, or a split-pane reboot (triggered by
+                    the connector's hard-reload threshold after N edits),
+                    wiped the OTHER live surface's cache. Its iframe still
+                    pointed at the now-deleted /preview/{oldSession}/… URLs,
+                    so the next sub-resource / navigation / reload 404'd
+                    until a full page refresh minted a fresh session and
+                    re-pushed the files. This was the "all paths become 404
+                    after opening a new tab once, or after many edits" bug.
+  ✅ OWN-CLEANUP    Each shell now cleans up ONLY ITS OWN session, on real
+                    teardown (pagehide with persisted===false → next call is
+                    HCODX_SW_CLEAR_SESSION { sessionId: <self> }). A live
+                    sibling surface is never touched. bfcache freezes
+                    (persisted===true) are skipped so a restored page keeps
+                    its cache.
+  ✅ BOUNDED-GC     onSwReady now triggers HCODX_SW_DEEP_CLEANUP (count-based,
+                    GC_KEY_LIMIT in sw.js) instead of session-nuking. Dead
+                    leftovers are reclaimed by total-entry pressure, never by
+                    targeting a specific (possibly live) session.
+  ✅ FIX-PRUNERACE  pruneOldRevisions() is now trailing-debounced (~400ms).
+                    It fired on EVERY write and the SW processes those async
+                    (full cache.keys() scan each time); a prune built at rev A
+                    could be processed AFTER rev B was written, and since B
+                    wasn't in A's keepRevisions snapshot the SW deleted the
+                    revision the iframe was CURRENTLY showing — an intermittent
+                    404 under fast typing. Debouncing means only the trailing
+                    prune fires per burst, always carrying the latest
+                    revHistory (which includes the current rev).
+
+  NEW in v4.5.0:
+  ✅ EXT-MIME     guessMime() now covers every extension used in
+                  modern HTML projects:
+                  • Styles:  styl, stylus
+                  • Scripts: vue, svelte
+                  • Data:    map (source maps), yaml, yml, graphql, gql
+                  • Images:  svgz, heic, heif, jxl
+                  • Audio:   oga, opus
+                  • Video:   ogv, m4v
+  ✅ ISTEXT       isText detection extended to recognise text/yaml
+                  so YAML files are served with charset=utf-8.
+  ✅ ATTR-REWRITE rewriteAssetPaths now handles additional HTML
+                  attributes used by lazy-load libraries and legacy
+                  markup:
+                  • data-bg, data-background, data-original,
+                    data-lazy-src, data-image  (lazy-load bg URLs)
+                  • data-srcset                (lazy srcset)
+                  • data-poster                (lazy video poster)
+                  • formaction                 (<button>/<input>)
+                  • background                 (<body>/<table> legacy)
+
+  NEW in v4.4.4:
+  ✅ FIX-OVERLAY     applyUpdate now re-shows the status overlay at the start
+                    of every update cycle (clears display:none + removes the
+                    'hidden' class). Previously the overlay stayed permanently
+                    invisible after the first hideOverlay() call, causing the
+                    old page to linger visibly during cache writes.
+  ✅ FIX-BOOT-REUSE  Reverted double-navigation approach. The overlay re-show
+                    (FIX-OVERLAY) is sufficient: it masks the iframe while the
+                    cache write runs on returning visits. fileHashMap dedup
+                    makes returning-visit cache writes fast (copies unchanged
+                    files from prev revision instead of re-encoding). One
+                    navigation total — no boot frame reset needed.
+  ✅ FIX-SPLIT   rewriteAssetPaths split regex now matches BOTH
+              </script> and <\/script> (escaped backslash variant
+              emitted by CONSOLE_INJECTOR and some frameworks). The
+              previous v4.4.0 regex only matched </script>, so the
+              injected console block was never captured as a script
+              segment — its JS was processed as HTML markup, corrupting
+              it and producing "Unexpected token" errors.
+  ✅ FIX-ORDER   rewriteAssetPaths now runs on RAW HTML BEFORE
+              injectConsoleScript in both the cache-write and boot-frame
+              paths. This makes the fix order-independent as a
+              belt-and-suspenders measure against any future injector
+              changes.
+  ✅ FIX-URL     Removed the 'i' flag from the url() rewrite regex so
+              it no longer matches JS new URL() / URL() constructors
+              in script blocks that might escape the split.
+
+  NEW in v4.4.0 / v4.3.0 / older: (see git history)
+  ══════════════════════════════════════════════════════════════════
+--><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-efea69a4-c596-4d77-a926-9d58e0a61999@mhtml.blink" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HCODX Preview</title>
+  
+</head>
+<body>
+
+<div id="status-overlay">
+  <div class="spinner"></div>
+  <div class="status-text" id="status-text">Rendering preview…</div>
+</div>
+
+<div id="empty-state">
+  <div class="icon">🖥️</div>
+  <div>Write some HTML and run the preview</div>
+</div>
+
+<iframe id="preview-inner" title="Preview content" sandbox="allow-scripts allow-same-origin allow-forms allow-modals
+           allow-popups allow-popups-to-escape-sandbox allow-downloads
+           allow-pointer-lock allow-orientation-lock allow-presentation allow-storage-access-by-user-activation" allow="accelerometer; camera; encrypted-media; geolocation; gyroscope;
+         microphone; midi; clipboard-read; clipboard-write; fullscreen;
+         autoplay; payment; usb; xr-spatial-tracking; web-share;
+         storage-access" src="cid:frame-3FF840A43E1393E9CF389949FF61FBE7@mhtml.blink">
+</iframe>
+
+
+
+
+</body></html>
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----
+Content-Type: text/css
+Content-Transfer-Encoding: binary
+Content-Location: cid:css-efea69a4-c596-4d77-a926-9d58e0a61999@mhtml.blink
+
+@charset "utf-8";
+
+*, ::before, ::after { box-sizing: border-box; margin: 0px; padding: 0px; }
+
+html, body { width: 100%; height: 100%; overflow: hidden; background: rgb(255, 255, 255); font-family: system-ui, -apple-system, sans-serif; }
+
+#preview-inner { width: 100%; height: 100%; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; display: block; background: rgb(255, 255, 255); }
+
+#status-overlay { position: fixed; inset: 0px; z-index: 9999; background: rgb(30, 30, 46); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: rgb(205, 214, 244); transition: opacity; }
+
+#status-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.status-text { font-size: 0.95rem; opacity: 0.8; }
+
+.spinner { width: 36px; height: 36px; border-width: 3px; border-style: solid; border-color: rgb(137, 180, 250) rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0.15); border-image: none; border-radius: 50%; animation: 0.8s linear 0s infinite normal none running spin; }
+
+@keyframes spin { 
+  100% { transform: rotate(360deg); }
+}
+
+#empty-state { position: fixed; inset: 0px; z-index: 100; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem; background: rgb(246, 248, 250); color: rgb(87, 96, 106); font-size: 0.9rem; }
+
+#empty-state.visible { display: flex; }
+
+#empty-state .icon { font-size: 2.5rem; opacity: 0.4; }
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----
+Content-Type: text/html
+Content-ID: <frame-3FF840A43E1393E9CF389949FF61FBE7@mhtml.blink>
+Content-Transfer-Encoding: binary
+Content-Location: https://sbx.hcodx.io/boot
+
+<!DOCTYPE html><!--
+  ══════════════════════════════════════════════════════════════════
+  HCODX PREVIEW BOOT FRAME  — sbx.hcodx.io/boot.html
+  VERSION: 1.1.0  (cross-origin render isolation)
+  ══════════════════════════════════════════════════════════════════
+  PURPOSE:
+    Fast-path first render. Loaded as the initial inner frame by
+    render.html (the render engine, same render origin). Immediately
+    sends HCODX_BOOT_HELLO to it so it can respond with the bootstrap payload
+    (entry HTML + critical CSS + critical JS) before the Service
+    Worker is active.
+
+  FLOW:
+    1. Boot frame loads → sends HCODX_BOOT_HELLO to parent shell.
+    2. Shell replies with HCODX_BOOT_READY { html, entryPath }.
+    3. Boot frame writes html via document.open/write/close,
+       achieving first visible paint in 120–250 ms.
+    4. Shell registers the SW in the background.
+    5. Once SW is active + cache written, shell replaces inner.src
+       with the real /preview/{sid}/{rev}/{path} URL (seamless).
+  ══════════════════════════════════════════════════════════════════
+--><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-ce9bb2d3-a0a4-477b-b8f3-af0e8bdc9114@mhtml.blink" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HCODX Boot</title>
+  
+</head>
+<body>
+  <div class="hcodx-boot-spinner" id="bs" aria-hidden="true"></div>
+
+  
+
+
+</body></html>
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1----
+Content-Type: text/css
+Content-Transfer-Encoding: binary
+Content-Location: cid:css-ce9bb2d3-a0a4-477b-b8f3-af0e8bdc9114@mhtml.blink
+
+@charset "utf-8";
+
+*, ::before, ::after { box-sizing: border-box; margin: 0px; padding: 0px; }
+
+html, body { width: 100%; height: 100%; overflow: hidden; background: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; }
+
+.hcodx-boot-spinner { width: 28px; height: 28px; border-width: 2.5px; border-style: solid; border-color: rgb(137, 180, 250) rgba(0, 0, 0, 0.08) rgba(0, 0, 0, 0.08); border-image: none; border-radius: 50%; animation: 0.7s linear 0.08s infinite normal none running hbs; opacity: 0; }
+
+@keyframes hbs { 
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInSpinner { 
+  0% { opacity: 0; }
+  100% { opacity: 0.6; }
+}
+
+.hcodx-boot-spinner { animation: 0.7s linear 0s infinite normal none running hbs, 0.2s ease 0.08s 1 normal forwards running fadeInSpinner; }
+------MultipartBoundary--bcCOrbOpx3obHicF38VKIYbMr7QBz5VCJ206dpLdK1------
